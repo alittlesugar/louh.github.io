@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我們正談論著</title>
+    <link rel="icon" href="black-cloud-rain-logotype.png" type="image/png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <style>
+        * {
+            font-family: "Poppins", sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://img.freepik.com/free-photo/cloud-forest-landscape_23-2151794686.jpg?t=st=1731241053~exp=1731244653~hmac=ea83234bdecd31c000ccf10f2d746fb323c23c0c59d2068c1ccf89f0d7c8c5e9&w=1380') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: rgba(39, 39, 39, 0.4);
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .nav-logo p {
+            color: #fff;
+            font-size: 25px;
+            font-weight: 600;
+        }
+
+        .nav-menu ul {
+            display: flex;
+        }
+
+        .nav-menu ul li {
+            list-style-type: none;
+        }
+
+        .nav-menu ul li .link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0 20px;
+            margin-bottom: 10px;
+        }
+
+        .link:hover, .active {
+            border-bottom: 2px solid #fff;
+        }
+
+        .chat-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 80px);
+        }
+
+        .chat-box {
+            width: 400px;
+            height: 600px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .input-box {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #sendButton {
+            margin-left: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background-color: #0056b3;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .message .user {
+            font-weight: bold;
+        }
+
+        .message .text {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="nav">
+            <div class="nav-logo">
+                <p>Talking About.</p>
+            </div>
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="#" class="link active" onclick="window.location.href='index.html'">主頁</a></li>
+                    <li><a href="#" class="link" onclick="window.location.href='123.html'">部落格</a></li>
+                    <li><a href="#" class="link" onclick="window.location.href='天氣.html'">天氣預報</a></li>
+                    <li><a href="#" class="link" onclick="window.location.href='2048.html'">小遊戲</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="chat-container">
+            <div class="chat-box">
+                <div class="messages" id="messages"></div>
+                <div class="input-box">
+                    <input type="text" id="messageInput" placeholder="輸入消息..." aria-label="輸入消息">
+                    <button id="sendButton" aria-label="發送消息">發送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+
+            const sendButton = document.getElementById('sendButton');
+            sendButton.addEventListener('click', sendMessage);
+
+            document.getElementById('messageInput').addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    sendButton.click();
+                }
+            });
+
+            function sendMessage() {
+                const messageInput = document.getElementById('messageInput');
+                const messageText = messageInput.value.trim();
+
+                if (messageText !== '') {
+                    displayMessage('You', messageText);
+                    saveMessage('You', messageText);
+                    messageInput.value = '';
+                }
+            }
+
+            function displayMessage(user, text) {
+                const messagesDiv = document.getElementById('messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+
+                const userSpan = document.createElement('span');
+                userSpan.classList.add('user');
+                userSpan.textContent = user + ':';
+
+                const textSpan = document.createElement('span');
+                textSpan.classList.add('text');
+                textSpan.textContent = text;
+
+                messageDiv.appendChild(userSpan);
+                messageDiv.appendChild(textSpan);
+                messagesDiv.appendChild(messageDiv);
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+
+            function saveMessage(user, text) {
+                const messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.push({ user, text });
+                localStorage.setItem('messages', JSON.stringify(messages));
+            }
+
+            function loadMessages() {
+                const messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.forEach(message => {
+                    displayMessage(message.user, message.text);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
